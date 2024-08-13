@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <th:block th:fragment="linkBootstrap">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+              integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+                crossorigin="anonymous" async></script>
+    </th:block>
+</head>
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Trang chủ</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+                <a class="nav-link active" aria-current="page" href="/student">Product</a>
+                <a sec:authorize="!isAuthenticated()" class="nav-link" href="/login">Customer</a>
+                <a sec:authorize="isAuthenticated()" class="nav-link" href="/logout">Product</a>
+            </div>
+        </div>
+    </div>
+</nav>
+<body>
+<div class="container mt-5">
+    <div class="header-text">
+        <h4>Manager Order</h4>
+        <label>Date</label>
+        <input type="date" th:value="${startDate}">
+        <label>To:</label>
+        <input type="date" th:value="${endDate}">
+        <button class="btn btn-primary" th:onclick="'viewOrders()'">Check</button>
+    </div>
+
+    <table class="table table-bordered mt-4">
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>Mã Đơn Hàng</th>
+            <th>Tên Sản Phẩm</th>
+            <th>Giá (USD)</th>
+            <th>Loại sản phẩm</th>
+            <th>Ngày Mua</th>
+            <th>Số lượng</th>
+            <th>Tổng tiền (USD)</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="order, iterStat : ${orders.content}">
+            <td th:text="${iterStat.index + 1}">1</td>
+            <td th:text="${order.orderId}">101</td>
+            <td th:text="${order.product.productName}">Sample Product</td>
+            <td th:text="${order.product.price}">99.99</td>
+            <td th:text="${order.product.status}">Available</td>
+            <td th:text="${order.formattedDate}"></td>
+            <td th:text="${order.quantity}">1</td>
+            <td th:text="${order.getTotalPrice()}">99.99</td>
+            <td>
+                <a th:href="@{/order/edit/{id}(id=${order.orderId})}" class="btn btn-warning">Edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${orders.hasPrevious()} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/order(page=${orders.number - 1})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item" th:each="page : ${#numbers.sequence(0, orders.totalPages - 1)}"
+                th:classappend="${page == orders.number} ? 'active'">
+                <a class="page-link" th:href="@{/order(page=${page})}" th:text="${page + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${orders.hasNext()} ? '' : 'disabled'">
+                <a class="page-link" th:href="@{/order(page=${orders.number + 1})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+</body>
+</html>
